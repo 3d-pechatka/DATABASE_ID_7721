@@ -196,8 +196,7 @@
     </div>
 
     <div class="modal-overlay" id="regModal">
-        <div class="reg-box" id="modalContent">
-            </div>
+        <div class="reg-box" id="modalContent"></div>
     </div>
 
     <div class="modal-overlay" id="imgModal">
@@ -222,15 +221,15 @@
             ]
         };
 
-        // НАСТРОЙКА ОТПРАВКИ (Вставь свою ссылку Formspree здесь)
         const FORMSPREE_URL = "https://formspree.io/f/mlgzzeab"; 
 
+        // Текст "Требуется авторизация" теперь красный
         const originalModalHTML = `
             <h2>ACCESS DENIED</h2>
             <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
-            <p style="font-size: 0.8rem; margin-top: 15px;">
-                Требуется авторизация.<br><br>
-                <a href="#" id="showRegForm" style="color: red; var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
+            <p style="font-size: 0.8rem; margin-top: 15px; color: red; font-weight: bold;">
+                ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.<br><br>
+                <a href="#" id="showRegForm" style="color: white !important; text-decoration: underline;">подать заявку на доступ</a>
             </p>
             <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
         `;
@@ -288,7 +287,6 @@
                 const pass = document.getElementById('regPass').value;
                 const errorMsg = document.getElementById('errorMsg');
 
-                // Проверка Gmail
                 const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
                 
                 if (!gmailPattern.test(email)) {
@@ -324,10 +322,14 @@
                         `;
                     } else { throw new Error(); }
                 } catch (err) {
-                    btn.disabled = false;
-                    btn.innerText = "ОТПРАВИТЬ ЗАПРОС";
-                    errorMsg.innerText = "ОШИБКА СЕТИ: ПОВТОРИТЕ ПОЗЖЕ";
-                    errorMsg.style.display = "block";
+                    // Обработка ошибки сети с кнопкой НАЗАД
+                    modalContent.innerHTML = `
+                        <h2 style="color: var(--accent);">ОШИБКА СЕТИ</h2>
+                        <p style="font-size: 0.9rem; line-height: 1.5;">Не удалось установить защищенное соединение.<br><br>
+                        <span style="color: red;">ПРОВЕРЬТЕ ПОДКЛЮЧЕНИЕ ИЛИ ПОВТОРИТЕ ПОЗЖЕ</span></p>
+                        <button id="backToForm" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:15px;">НАЗАД</button>
+                    `;
+                    document.getElementById('backToForm').onclick = showRegForm;
                 }
             };
         }
