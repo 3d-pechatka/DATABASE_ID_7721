@@ -207,7 +207,7 @@
     <script>
         const MY_DOCUMENT = {
             title: "PDF - ЯРОСЛАВ", 
-            text: `СТАТУС: 
+            text: `СТАТУС: Активно.
 ФИО: Ярослав С.
 ПАСПОРТ: 123.123.123
 ТЕЛЕФОН: +7 (900) --- -- --
@@ -223,14 +223,14 @@
         };
 
         // НАСТРОЙКА ОТПРАВКИ (Вставь свою ссылку Formspree здесь)
-        const FORMSPREE_URL = "https://formspree.io/f/mlgzzell"; 
+        const FORMSPREE_URL = "https://formspree.io/f/mlgzzeab"; 
 
         const originalModalHTML = `
             <h2>ACCESS DENIED</h2>
             <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
             <p style="font-size: 0.8rem; margin-top: 15px;">
                 Требуется авторизация.<br><br>
-                <a href="#" id="showRegForm" style="color: var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
+                <a href="#" id="showRegForm" style="color: red; var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
             </p>
             <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
         `;
