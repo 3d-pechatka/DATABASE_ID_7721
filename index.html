@@ -175,7 +175,7 @@
     <nav class="header">
         <div class="logo" id="logoBtn">RU.PDF</div>
         <div class="nav-btns">
-            <button id="regBtn">Вход в систему</button>
+            <button id="regBtn">Войти в аккаунт.</button>
         </div>
     </nav>
 
@@ -192,21 +192,26 @@
             </div>
 
             <div class="stats">
-                <span>DATABASE_VIEWS: <b id="viewCount">...</b></span>
-                <span>MATCHES: <b id="likeCount">...</b></span>
+                <span>ПРОСМОТРЫ: <b id="viewCount">...</b></span>
+                <span>ИЗБРАННОЕ: <b id="likeCount">...</b></span>
             </div>
 
             <div class="comment-block">
-                <h4 style="color: var(--danger)">ПЕРЕХВАТ СООБЩЕНИЙ:</h4>
+                <h4 style="color: var(--danger)">COMMENTS:</h4>
                 <div id="commentList"></div>
             </div>
         </div>
     </div>
 
+    </div>
     <div class="modal-overlay" id="regModal">
         <div class="reg-box">
             <h2>ACCESS DENIED</h2>
-            <p style="color: red;">ВАШ IP-АДРЕС БЫЛ ЗАПИСАН.</p>
+            <p style="color: red;">Ваш IP не подтверждён, невозможно войти. </p>
+            <p style="font-size: 0.8rem; margin-top: 15px;">
+                Требуется авторизация.
+                 <a href="#" id="showRegForm" style="color: var(--accent); text-decoration: underline;">Подать заявку на доступ</a>
+            </p>
             <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
         </div>
     </div>
@@ -286,6 +291,34 @@
             renderPage();
             updateStats();
             setInterval(updateStats, 15000);
+        };
+        // Логика формы регистрации
+        document.getElementById('showRegForm').onclick = (e) => {
+            e.preventDefault();
+            document.getElementById('modalContent').innerHTML = `
+                <h2 style="font-size: 1.2rem;">ФОРМА ДОСТУПА</h2>
+                <div style="text-align: left; margin-top: 20px;">
+                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">EMAIL:</label>
+                    <input type="email" id="regEmail" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; margin-bottom: 15px; box-sizing: border-box;">
+                    
+                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">PASSWORD:</label>
+                    <input type="password" id="regPass" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; box-sizing: border-box;">
+                </div>
+                <button id="submitReg" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:20px;">ОТПРАВИТЬ ЗАПРОС</button>
+            `;
+
+            document.getElementById('submitReg').onclick = () => {
+                const email = document.getElementById('regEmail').value;
+                if(email.length < 5) { alert("ОШИБКА: Некорректный ввод"); return; }
+                
+                document.getElementById('modalContent').innerHTML = `
+                    <h2 style="color: var(--accent);">ЗАПРОС ПРИНЯТ</h2>
+                    <p style="font-size: 0.9rem; line-height: 1.5;">Ваши данные переданы в отдел безопасности.<br><br>
+                    <span style="color: yellow;">ОЖИДАЙТЕ ОТВЕТА АДМИНИСТРАТОРА</span><br>
+                    (Обычно это занимает от 2 до 24 часов)</p>
+                    <button onclick="location.reload()" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ЗАКРЫТЬ</button>
+                `;
+            };
         };
     </script>
 </body>
