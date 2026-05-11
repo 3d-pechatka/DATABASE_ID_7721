@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
@@ -30,6 +30,9 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(56, 189, 248, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
 
         .logo {
@@ -38,6 +41,7 @@
             cursor: pointer;
             font-size: 1.2rem;
             letter-spacing: 1px;
+            user-select: none;
         }
 
         .nav-btns button {
@@ -47,7 +51,10 @@
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
+            transition: 0.3s;
         }
+
+        .nav-btns button:hover { opacity: 0.8; }
 
         .main-content {
             flex: 1;
@@ -65,20 +72,21 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        #textDisplay { line-height: 1.6; font-size: 1.1rem; white-space: pre-wrap; }
+        #textDisplay { line-height: 1.6; font-size: 1.1rem; white-space: pre-wrap; margin-bottom: 20px; }
         .post-img { width: 100%; border-radius: 8px; margin: 20px 0; display: none; }
 
         .stats {
             display: flex;
-            gap: 20px;
+            gap: 25px;
             margin-top: 30px;
             padding: 20px 0;
             border-top: 1px solid rgba(255,255,255,0.1);
             color: #94a3b8;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
 
-        /* КОММЕНТАРИИ */
+        .stats b { color: var(--text); }
+
         .comment-block { margin-top: 30px; }
         .comment-item { 
             background: rgba(255,255,255,0.03); 
@@ -91,11 +99,12 @@
 
         /* ОКНО РЕГИСТРАЦИИ */
         .modal-overlay {
-            display: none;
+            display: none; /* Скрыто по умолчанию */
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
             align-items: center;
             justify-content: center;
         }
@@ -106,35 +115,37 @@
             border-radius: 20px;
             text-align: center;
             max-width: 400px;
+            border: 1px solid var(--accent);
+            box-shadow: 0 0 30px rgba(56, 189, 248, 0.2);
         }
+
+        .reg-box h2 { margin-top: 0; color: var(--accent); }
     </style>
 </head>
 <body>
 
     <nav class="header">
-        <div class="logo" onclick="showReg()">RU.PDF</div>
+        <div class="logo" id="logoBtn">RU.PDF</div>
         <div class="nav-btns">
-            <button onclick="showReg()">Войти / Регистрация</button>
+            <button id="regBtn">Войти / Регистрация</button>
         </div>
     </nav>
 
     <div class="main-content">
         <div class="post-container">
-            
             <div id="postContent">
-                <p id="textDisplay">Загрузка документа...</p>
+                <p id="textDisplay">Ваш текст документа...</p>
                 <img src="" id="imgDisplay" class="post-img">
             </div>
 
             <div class="stats">
-                <span>👁 Просмотры: <b id="viewCount">0</b></span>
-                <span>❤️ Лайки: <b id="likeCount">0</b></span>
+                <span>👁 Просмотры: <b id="viewCount">...</b></span>
+                <span>❤️ Лайки: <b id="likeCount">...</b></span>
             </div>
 
             <div class="comment-block">
                 <h4>Комментарии:</h4>
-                <div id="commentList">
-                    </div>
+                <div id="commentList"></div>
             </div>
         </div>
     </div>
@@ -143,4 +154,103 @@
         <div class="reg-box">
             <h2>Доступ ограничен</h2>
             <p>Чтобы просматривать защищенные PDF-файлы, ваша учетная запись должна быть одобрена администратором.</p>
-            <button onclick="closeReg()" style="width:100%; padding:12
+            <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:15px;">Понятно</button>
+        </div>
+    </div>
+
+    <script>
+        // --- ДАННЫЕ ДОКУМЕНТА ---
+        const MY_DOCUMENT = {
+            text: "Этот документ содержит конфиденциальную информацию. Пожалуйста, не распространяйте его за пределами закрытой группы.",
+            image: "", 
+            comments: [
+                { user: "Dmitry_K", text: "Все открылось, спасибо!" },
+                { user: "Admin_Security", text: "Файл проверен антивирусом. Угроз не обнаружено." },
+                { user: "Elena_P", text: "У меня не загружается вторая страница, что делать?" },
+                { user: "Tech_Support", text: "Elena_P, обновите страницу или проверьте интернет-соединение." }
+            ]
+        };
+
+        // --- ЛОГИКА СТАТИСТИКИ (Просмотры и Лайки) ---
+        function updateStats() {
+            let views = parseInt(localStorage.getItem('pdf_views_count'));
+            
+            if (!views || isNaN(views)) {
+                // Если первый раз, ставим от 450 до 550
+                views = Math.floor(Math.random() * (550 - 450 + 1)) + 450;
+            } else {
+                // Иначе прибавляем немного
+                views += Math.floor(Math.random() * 5) + 1;
+            }
+
+            // Лайки - это всегда примерно 10% от просмотров + рандом
+            let likes = Math.floor(views * 0.08) + Math.floor(Math.random() * 5);
+
+            localStorage.setItem('pdf_views_count', views);
+            
+            document.getElementById('viewCount').innerText = views;
+            document.getElementById('likeCount').innerText = likes;
+        }
+
+        // --- УПРАВЛЕНИЕ ОКНОМ ---
+        const modal = document.getElementById('regModal');
+        
+        function openModal() {
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        // Назначаем события
+        document.getElementById('logoBtn').onclick = openModal;
+        document.getElementById('regBtn').onclick = openModal;
+        document.getElementById('closeModalBtn').onclick = closeModal;
+
+        // --- ЗАГРУЗКА СТРАНИЦЫ ---
+        function renderPage() {
+            // Текст
+            document.getElementById('textDisplay').innerText = MY_DOCUMENT.text;
+            
+            // Фото
+            if(MY_DOCUMENT.image) {
+                const img = document.getElementById('imgDisplay');
+                img.src = MY_DOCUMENT.image;
+                img.style.display = 'block';
+            }
+
+            // Комменты
+            const list = document.getElementById('commentList');
+            list.innerHTML = ""; // очистка
+            MY_DOCUMENT.comments.forEach(c => {
+                list.innerHTML += `
+                    <div class="comment-item">
+                        <span class="comment-user">${c.user}</span>
+                        <div>${c.text}</div>
+                    </div>`;
+            });
+        }
+
+        window.onload = () => {
+            renderPage();
+            updateStats();
+            // Обновляем стату каждые 30 секунд для эффекта "живого" сайта
+            setInterval(updateStats, 30000);
+        };
+
+        // ДАННЫЕ ДОКУМЕНТА (Меняй прямо тут)
+        const MY_DOCUMENT = {
+            text: "СЮДА ПИШИ СВОЙ ТЕКСТ, КОТОРЫЙ УВИДИТ ПОЛЬЗОВАТЕЛЬ",
+            image: "ССЫЛКА_НА_ФОТО", // Если фото не нужно, оставь пустые кавычки ""
+            likes: 124, // Любое число лайков
+            comments: [
+                { user: "Ivan_Tech", text: "Файл открылся без проблем!" },
+                { user: "Moderator", text: "Доступ подтвержден." },
+                { user: "User_77", text: "Спасибо за информацию." }
+            ]
+        };
+        
+    </script>
+</body>
+</html>
