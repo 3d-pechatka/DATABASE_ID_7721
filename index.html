@@ -3,25 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RU.PDF</title>
+    <title>RU.PDF | CONFIDENTIAL</title>
     <style>
         :root {
-            --bg: #0b0f1a;
-            --panel: #161b2b;
-            --accent: #38bdf8;
-            --text: #f8fafc;
+            --bg: #050505;
+            --panel: #0d0d0d;
+            --accent: #ff0000; /* Кроваво-красный */
+            --text: #e2e2e2;
+            --danger: #7f0000;
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Courier New', Courier, monospace;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
+        /* Глитч эффект для логотипа */
         .header {
             background: var(--panel);
             padding: 0 20px;
@@ -29,21 +32,43 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(56, 189, 248, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 999;
+            border-bottom: 2px solid var(--danger);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.2);
         }
 
-        .logo { font-weight: 800; color: var(--accent); cursor: pointer; font-size: 1.2rem; }
+        .logo {
+            font-weight: 900;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 2px 0 red, -2px 0 blue; }
+            5% { text-shadow: -2px 0 red, 2px 0 blue; }
+            10% { text-shadow: 2px 0 red, -2px 0 blue; }
+            100% { text-shadow: none; }
+        }
 
         .nav-btns button {
-            background: var(--accent);
-            border: none;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
             padding: 8px 16px;
-            border-radius: 6px;
+            border-radius: 0;
             font-weight: bold;
             cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+        }
+
+        .nav-btns button:hover {
+            background: var(--accent);
+            color: black;
+            box-shadow: 0 0 20px var(--accent);
         }
 
         .main-content {
@@ -58,87 +83,91 @@
             max-width: 750px;
             background: var(--panel);
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid #1a1a1a;
+            box-shadow: 0 0 50px rgba(0,0,0,1);
+            position: relative;
         }
 
-        /* Название файла */
         .file-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: var(--accent);
             margin-bottom: 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--danger);
             padding-bottom: 10px;
+            text-transform: uppercase;
         }
 
-        /* Текст в столбик */
         #textDisplay { 
             line-height: 1.8; 
-            font-size: 1.05rem; 
-            white-space: pre-line; /* Сохраняет переносы строк */
+            font-size: 1rem; 
+            white-space: pre-line;
             margin-bottom: 25px;
-            color: #cbd5e1;
+            color: #afafaf;
+            border-left: 2px solid var(--danger);
+            padding-left: 15px;
         }
 
-        /* Миниатюра фото */
+        /* Пульсирующая рамка фото */
         .img-wrapper {
-            max-width: 200px;
-            border: 2px solid var(--accent);
-            border-radius: 8px;
-            overflow: hidden;
+            max-width: 250px;
+            border: 1px solid var(--danger);
             cursor: zoom-in;
             transition: 0.3s;
             margin-bottom: 20px;
+            filter: grayscale(100%) contrast(120%);
+            animation: pulse 2s infinite;
         }
-        .img-wrapper:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--accent); }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0px var(--danger); }
+            50% { box-shadow: 0 0 15px var(--danger); }
+            100% { box-shadow: 0 0 0px var(--danger); }
+        }
+
+        .img-wrapper:hover { filter: none; transform: scale(1.05); }
         .post-img { width: 100%; display: none; }
 
         .stats {
             display: flex;
             gap: 25px;
             margin-top: 30px;
-            padding: 20px 0;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: #94a3b8;
-            font-size: 0.95rem;
+            padding: 15px 0;
+            border-top: 1px dotted var(--danger);
+            color: #666;
+            font-size: 0.8rem;
         }
-
-        .stats b { color: var(--text); }
 
         .comment-item { 
-            background: rgba(255,255,255,0.03); 
+            background: #080808; 
             padding: 15px; 
-            border-radius: 8px; 
-            margin-bottom: 15px;
-            border-left: 3px solid var(--accent);
+            margin-bottom: 10px;
+            border: 1px solid #1a1a1a;
         }
-        .comment-user { font-weight: bold; color: var(--accent); display: block; margin-bottom: 5px; }
+        .comment-user { font-weight: bold; color: var(--danger); display: block; margin-bottom: 5px; }
 
         /* Модальные окна */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.9);
-            backdrop-filter: blur(5px);
+            background: rgba(0,0,0,0.95);
             z-index: 10000;
             align-items: center;
             justify-content: center;
-            padding: 20px;
         }
 
         .reg-box {
-            background: var(--panel);
+            background: black;
             padding: 40px;
-            border-radius: 20px;
+            border: 2px solid var(--accent);
             text-align: center;
             max-width: 400px;
-            border: 1px solid var(--accent);
         }
 
-        /* Полноразмерное фото */
-        #fullImg { max-width: 100%; max-height: 90vh; border-radius: 5px; }
+        .reg-box h2 { color: var(--accent); text-transform: uppercase; letter-spacing: 5px; }
+
+        #fullImg { max-width: 95%; max-height: 90vh; border: 2px solid var(--accent); }
     </style>
 </head>
 <body>
@@ -146,16 +175,16 @@
     <nav class="header">
         <div class="logo" id="logoBtn">RU.PDF</div>
         <div class="nav-btns">
-            <button id="regBtn">Войти / Регистрация</button>
+            <button id="regBtn">Вход в систему</button>
         </div>
     </nav>
 
     <div class="main-content">
         <div class="post-container">
-            <div class="file-title" id="fileTitle">Загрузка...</div>
+            <div class="file-title" id="fileTitle">SYSTEM_ERROR_LOAD</div>
             
             <div id="postContent">
-                <p id="textDisplay">Загрузка данных...</p>
+                <p id="textDisplay">INITIALIZING...</p>
                 
                 <div class="img-wrapper" id="imgClick">
                     <img src="" id="imgDisplay" class="post-img">
@@ -163,12 +192,12 @@
             </div>
 
             <div class="stats">
-                <span>👁 Просмотры: <b id="viewCount">...</b></span>
-                <span>❤️ Лайки: <b id="likeCount">...</b></span>
+                <span>DATABASE_VIEWS: <b id="viewCount">...</b></span>
+                <span>MATCHES: <b id="likeCount">...</b></span>
             </div>
 
             <div class="comment-block">
-                <h4>Комментарии:</h4>
+                <h4 style="color: var(--danger)">ПЕРЕХВАТ СООБЩЕНИЙ:</h4>
                 <div id="commentList"></div>
             </div>
         </div>
@@ -176,9 +205,9 @@
 
     <div class="modal-overlay" id="regModal">
         <div class="reg-box">
-            <h2>Доступ ограничен</h2>
-            <p>Учетная запись должна быть одобрена администратором.</p>
-            <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; border-radius:8px; cursor:pointer; font-weight:bold; margin-top:15px;">Понятно</button>
+            <h2>ACCESS DENIED</h2>
+            <p style="color: red;">ВАШ IP-АДРЕС БЫЛ ЗАПИСАН.</p>
+            <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
         </div>
     </div>
 
@@ -187,35 +216,35 @@
     </div>
 
     <script>
-        // --- ТВОИ ДАННЫЕ (МЕНЯТЬ ТУТ) ---
+        // --- ДАННЫЕ (МЕНЯЙ ТУТ) ---
         const MY_DOCUMENT = {
-            title: "Файл: PDF - Ярослав", // Название файла сверху
-            text: `ФИО: Ярослав С.
-Паспорт: 123.123.123
-Дата выдачи: 12.05.2022
-Телефон: +7 (900) --- -- --
-Адрес: ул. Связистов, д. 10`, // Текст в столбик (используй обратные кавычки ``)
+            title: "PDF - ЯРОСЛАВ", 
+            text: `СТАТУС: 
+ФИО: Ярослав С.
+ПАСПОРТ: 123.123.123
+ТЕЛЕФОН: +7 (900) --- -- --
+ЛОКАЦИЯ: ул. Связистов, д. 10
+---------------------------------
+ВНИМАНИЕ: Информация будет обновлена (предоставлен полыный доступ) в течение 24 часов, если человек не захочет вести диалог и решить все мирно. `, 
             
             image: "a8ogt1bqlh5xjp1mxidl (1).png", 
             
             comments: [
-                { user: "User_12309", text: "Думаю можно на этого пдф микрозаймов взять, ахуели совсем уже." },
-                { user: "User_9385395", text: "Ебать хорошо сработали парни, выгружайте полный доступ!" },
-                { user: "User_937567", text: "Жду когда уже можно будет работать, заливайте в тгк." }
+                { user: "System_Guard", text: "Думаю можно на этого пдф микрозаймоф по паспорту оформить, ахуели уже совсем" },
+                { user: "User_9385395", text: "Ебать хорошо сработали парни, выгружайте полный доступ" },
+                { user: "UNKNOWN", text: "Давайте быстрее выгрудайте полный доступ чтоб по данным работать или тгк заливайте" }
             ]
         };
 
-        // Логика статистики
         function updateStats() {
-            let views = parseInt(localStorage.getItem('pdf_views_count')) || Math.floor(Math.random() * 100) + 450;
-            views += Math.floor(Math.random() * 3) + 1;
-            let likes = Math.floor(views * 0.08) + Math.floor(Math.random() * 5);
+            let views = parseInt(localStorage.getItem('pdf_views_count')) || 666;
+            views += Math.floor(Math.random() * 2) + 1;
+            let likes = Math.floor(views * 0.13);
             localStorage.setItem('pdf_views_count', views);
             document.getElementById('viewCount').innerText = views;
             document.getElementById('likeCount').innerText = likes;
         }
 
-        // Модалки
         const regModal = document.getElementById('regModal');
         const imgModal = document.getElementById('imgModal');
         
@@ -232,7 +261,7 @@
         document.getElementById('regBtn').onclick = openReg;
         document.getElementById('closeModalBtn').onclick = closeReg;
         document.getElementById('imgClick').onclick = openImg;
-        imgModal.onclick = closeImg; // Закрыть фото кликом в любое место
+        imgModal.onclick = closeImg;
 
         function renderPage() {
             document.getElementById('fileTitle').innerText = MY_DOCUMENT.title;
@@ -242,15 +271,13 @@
                 const img = document.getElementById('imgDisplay');
                 img.src = MY_DOCUMENT.image;
                 img.style.display = 'block';
-            } else {
-                document.getElementById('imgClick').style.display = 'none';
             }
-
+            
             const list = document.getElementById('commentList');
             list.innerHTML = MY_DOCUMENT.comments.map(c => `
                 <div class="comment-item">
                     <span class="comment-user">${c.user}</span>
-                    <div>${c.text}</div>
+                    <div style="color: #888">${c.text}</div>
                 </div>
             `).join('');
         }
@@ -258,7 +285,7 @@
         window.onload = () => {
             renderPage();
             updateStats();
-            setInterval(updateStats, 30000);
+            setInterval(updateStats, 15000);
         };
     </script>
 </body>
