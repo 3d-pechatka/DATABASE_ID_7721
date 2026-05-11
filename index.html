@@ -8,7 +8,7 @@
         :root {
             --bg: #050505;
             --panel: #0d0d0d;
-            --accent: #ff0000; /* Кроваво-красный */
+            --accent: #ff0000;
             --text: #e2e2e2;
             --danger: #7f0000;
         }
@@ -24,7 +24,6 @@
             overflow-x: hidden;
         }
 
-        /* Глитч эффект для логотипа */
         .header {
             background: var(--panel);
             padding: 0 20px;
@@ -108,7 +107,6 @@
             padding-left: 15px;
         }
 
-        /* Пульсирующая рамка фото */
         .img-wrapper {
             max-width: 250px;
             border: 1px solid var(--danger);
@@ -146,7 +144,6 @@
         }
         .comment-user { font-weight: bold; color: var(--danger); display: block; margin-bottom: 5px; }
 
-        /* Модальные окна */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -166,7 +163,6 @@
         }
 
         .reg-box h2 { color: var(--accent); text-transform: uppercase; letter-spacing: 5px; }
-
         #fullImg { max-width: 95%; max-height: 90vh; border: 2px solid var(--accent); }
     </style>
 </head>
@@ -185,7 +181,6 @@
             
             <div id="postContent">
                 <p id="textDisplay">INITIALIZING...</p>
-                
                 <div class="img-wrapper" id="imgClick">
                     <img src="" id="imgDisplay" class="post-img">
                 </div>
@@ -203,17 +198,15 @@
         </div>
     </div>
 
-    </div>
     <div class="modal-overlay" id="regModal">
-        <div class="reg-box">
+        <div class="reg-box" id="modalContent">
             <h2>ACCESS DENIED</h2>
-            <p style="color: red;">Ваш IP не подтверждён, невозможно войти. </p>
+            <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
             <p style="font-size: 0.8rem; margin-top: 15px;">
-                Требуется авторизация.
-                 <a href="#" id="showRegForm" style="color: var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
+                Требуется авторизация.<br><br>
+                <a href="#" id="showRegForm" style="color: var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
             </p>
             <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
-</p>
         </div>
     </div>
 
@@ -222,7 +215,6 @@
     </div>
 
     <script>
-        // --- ДАННЫЕ (МЕНЯЙ ТУТ) ---
         const MY_DOCUMENT = {
             title: "PDF - ЯРОСЛАВ", 
             text: `СТАТУС: 
@@ -253,19 +245,62 @@
 
         const regModal = document.getElementById('regModal');
         const imgModal = document.getElementById('imgModal');
-        
-        const openReg = () => regModal.style.display = 'flex';
+        const modalContent = document.getElementById('modalContent');
+        const originalModalHTML = modalContent.innerHTML; // Сохраняем исходный вид окна
+
+        const openReg = () => {
+            modalContent.innerHTML = originalModalHTML; // Сбрасываем окно к исходному виду при открытии
+            regModal.style.display = 'flex';
+            attachEvents(); // Переназначаем клики
+        };
         const closeReg = () => regModal.style.display = 'none';
-        
+
         const openImg = () => {
             document.getElementById('fullImg').src = MY_DOCUMENT.image;
             imgModal.style.display = 'flex';
         };
         const closeImg = () => imgModal.style.display = 'none';
 
+        function attachEvents() {
+            document.getElementById('closeModalBtn').onclick = closeReg;
+            const regLink = document.getElementById('showRegForm');
+            if(regLink) {
+                regLink.onclick = (e) => {
+                    e.preventDefault();
+                    showRegForm();
+                };
+            }
+        }
+
+        function showRegForm() {
+            modalContent.innerHTML = `
+                <h2 style="font-size: 1.2rem;">ФОРМА ДОСТУПА</h2>
+                <div style="text-align: left; margin-top: 20px;">
+                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">EMAIL:</label>
+                    <input type="email" id="regEmail" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; margin-bottom: 15px; box-sizing: border-box; outline: none;">
+                    
+                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">PASSWORD:</label>
+                    <input type="password" id="regPass" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; box-sizing: border-box; outline: none;">
+                </div>
+                <button id="submitReg" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:20px;">ОТПРАВИТЬ ЗАПРОС</button>
+            `;
+
+            document.getElementById('submitReg').onclick = () => {
+                const email = document.getElementById('regEmail').value;
+                if(email.length < 5) { alert("ОШИБКА: Некорректный ввод"); return; }
+                
+                modalContent.innerHTML = `
+                    <h2 style="color: var(--accent);">ЗАПРОС ПРИНЯТ</h2>
+                    <p style="font-size: 0.9rem; line-height: 1.5;">Ваши данные переданы в отдел безопасности.<br><br>
+                    <span style="color: yellow;">ОЖИДАЙТЕ ОТВЕТА АДМИНИСТРАТОРА</span><br>
+                    (Обычно это занимает от 2 до 24 часов)</p>
+                    <button onclick="location.reload()" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ЗАКРЫТЬ</button>
+                `;
+            };
+        }
+
         document.getElementById('logoBtn').onclick = openReg;
         document.getElementById('regBtn').onclick = openReg;
-        document.getElementById('closeModalBtn').onclick = closeReg;
         document.getElementById('imgClick').onclick = openImg;
         imgModal.onclick = closeImg;
 
@@ -292,34 +327,7 @@
             renderPage();
             updateStats();
             setInterval(updateStats, 15000);
-        };
-        // Логика формы регистрации
-        document.getElementById('showRegForm').onclick = (e) => {
-            e.preventDefault();
-            document.getElementById('modalContent').innerHTML = `
-                <h2 style="font-size: 1.2rem;">ФОРМА ДОСТУПА</h2>
-                <div style="text-align: left; margin-top: 20px;">
-                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">EMAIL:</label>
-                    <input type="email" id="regEmail" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; margin-bottom: 15px; box-sizing: border-box;">
-                    
-                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">PASSWORD:</label>
-                    <input type="password" id="regPass" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; box-sizing: border-box;">
-                </div>
-                <button id="submitReg" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:20px;">ОТПРАВИТЬ ЗАПРОС</button>
-            `;
-
-            document.getElementById('submitReg').onclick = () => {
-                const email = document.getElementById('regEmail').value;
-                if(email.length < 5) { alert("ОШИБКА: Некорректный ввод"); return; }
-                
-                document.getElementById('modalContent').innerHTML = `
-                    <h2 style="color: var(--accent);">ЗАПРОС ПРИНЯТ</h2>
-                    <p style="font-size: 0.9rem; line-height: 1.5;">Ваши данные переданы в отдел безопасности.<br><br>
-                    <span style="color: yellow;">ОЖИДАЙТЕ ОТВЕТА АДМИНИСТРАТОРА</span><br>
-                    (Обычно это занимает от 2 до 24 часов)</p>
-                    <button onclick="location.reload()" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ЗАКРЫТЬ</button>
-                `;
-            };
+            attachEvents();
         };
     </script>
 </body>
