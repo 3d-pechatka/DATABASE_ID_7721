@@ -225,7 +225,6 @@
 
         const FORMSPREE_URL = "https://formspree.io/f/mlgzzeab"; 
 
-        // Ссылка "подать заявку на доступ" теперь красная (color: red)
         const originalModalHTML = `
             <h2>ACCESS DENIED</h2>
             <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
@@ -282,7 +281,11 @@
                     <p id="errorMsg" style="color: yellow; font-size: 0.7rem; margin-top: 10px; display: none; font-weight: bold;"></p>
                 </div>
                 <button id="submitReg" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:20px;">ОТПРАВИТЬ ЗАПРОС</button>
+                
+                <button id="cancelRegBtn" style="width:100%; padding:10px; background:transparent; border:1px solid #333; color:#666; cursor:pointer; font-weight:bold; margin-top:10px; font-size: 0.7rem;">ВЕРНУТЬСЯ К ФАЙЛУ</button>
             `;
+
+            document.getElementById('cancelRegBtn').onclick = closeReg;
 
             document.getElementById('submitReg').onclick = async () => {
                 const email = document.getElementById('regEmail').value;
@@ -324,7 +327,6 @@
                         `;
                     } else { throw new Error(); }
                 } catch (err) {
-                    // Обработка ошибки сети с кнопкой НАЗАД, чтобы не перезагружать страницу
                     modalContent.innerHTML = `
                         <h2 style="color: var(--accent);">ОШИБКА СЕТИ</h2>
                         <p style="font-size: 0.9rem; line-height: 1.5;">Не удалось установить защищенное соединение.<br><br>
