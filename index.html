@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>RU.PDF | CONFIDENTIAL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RU.PDF | CONFIDENTIAL</title>
     <style>
         :root {
             --bg: #050505;
@@ -224,13 +225,13 @@
 
         const FORMSPREE_URL = "https://formspree.io/f/mlgzzeab"; 
 
-        // Текст "Требуется авторизация" теперь красный
+        // Ссылка "подать заявку на доступ" теперь красная (color: red)
         const originalModalHTML = `
             <h2>ACCESS DENIED</h2>
             <p style="color: red;">Ваш IP не подтверждён, невозможно войти.</p>
             <p style="font-size: 0.8rem; margin-top: 15px; color: red; font-weight: bold;">
                 ТРЕБУЕТСЯ АВТОРИЗАЦИЯ.<br><br>
-                <a href="#" id="showRegForm" style="color: white !important; text-decoration: underline;">подать заявку на доступ</a>
+                <a href="#" id="showRegForm" style="color: red !important; text-decoration: underline;">подать заявку на доступ</a>
             </p>
             <button id="closeModalBtn" style="width:100%; padding:12px; background:var(--accent); border:none; color:black; cursor:pointer; font-weight:bold; margin-top:15px;">ВЕРНУТЬСЯ</button>
         `;
@@ -323,14 +324,14 @@
                         `;
                     } else { throw new Error(); }
                 } catch (err) {
-                    // Обработка ошибки сети с кнопкой НАЗАД
+                    // Обработка ошибки сети с кнопкой НАЗАД, чтобы не перезагружать страницу
                     modalContent.innerHTML = `
                         <h2 style="color: var(--accent);">ОШИБКА СЕТИ</h2>
                         <p style="font-size: 0.9rem; line-height: 1.5;">Не удалось установить защищенное соединение.<br><br>
                         <span style="color: red;">ПРОВЕРЬТЕ ПОДКЛЮЧЕНИЕ ИЛИ ПОВТОРИТЕ ПОЗЖЕ</span></p>
-                        <button id="backToForm" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:15px;">НАЗАД</button>
+                        <button id="backToFormBtn" style="width:100%; padding:12px; background:var(--danger); border:none; color:white; cursor:pointer; font-weight:bold; margin-top:15px;">НАЗАД</button>
                     `;
-                    document.getElementById('backToForm').onclick = showRegForm;
+                    document.getElementById('backToFormBtn').onclick = showRegForm;
                 }
             };
         }
